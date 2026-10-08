@@ -28,12 +28,12 @@ function TechDash() {
 
   async function toggle(v: boolean) {
     const { error } = await supabase.from("technicians").update({ is_available: v }).eq("user_id", me!.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["tech-self"] });
   }
   async function move(id: string, to: Status) {
     const { error } = await supabase.rpc("update_complaint_status", { _complaint: id, _status: to });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Status updated");
     qc.invalidateQueries();
   }

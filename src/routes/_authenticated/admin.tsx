@@ -43,14 +43,14 @@ function Admin() {
   if (!isAdmin) return <NoAccess />;
 
   async function setRole(userId: string, role: AppRole, category?: string) {
-    const { error } = await supabase.rpc("set_user_role", { _user: userId, _role: role, _category: category });
-    if (error) return toast.error(errMsg(error));
+    const { error } = await supabase.rpc("set_user_role", { _user: userId, _role: role, ...(category ? { _category: category } : {}) });
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Role updated");
     qc.invalidateQueries();
   }
   async function setTechCategory(userId: string, category: string) {
     const { error } = await supabase.from("technicians").update({ category_id: category }).eq("user_id", userId);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries();
   }
 
@@ -109,9 +109,9 @@ function Admin() {
             items={(lk?.categories ?? []).map((c) => ({ id: c.id, primary: c.name, secondary: `${c.sla_hours}h target · ${c.description ?? ""}` }))}
             fields={[{ name: "name", placeholder: "Category name" }, { name: "sla_hours", placeholder: "Target hours", type: "number" }, { name: "description", placeholder: "Description" }]}
             onAdd={async (v) => {
-              const sla = Number(v.sla_hours || 48);
-              if (v.name.trim().length < 2 || !(sla > 0 && sla <= 720)) throw new Error("Enter a name and target hours (1–720)");
-              const { error } = await supabase.from("categories").insert({ name: v.name.trim(), sla_hours: sla, description: v.description || null });
+              const sla = Number((v["sla_hours"] ?? "") || 48);
+              if ((v["name"] ?? "").trim().length < 2 || !(sla > 0 && sla <= 720)) throw new Error("Enter a name and target hours (1–720)");
+              const { error } = await supabase.from("categories").insert({ name: (v["name"] ?? "").trim(), sla_hours: sla, description: (v["description"] ?? "") || null });
               if (error) throw error;
             }}
             onDelete={async (id) => { const { error } = await supabase.from("categories").delete().eq("id", id); if (error) throw error; }}
@@ -123,8 +123,8 @@ function Admin() {
             items={(lk?.locations ?? []).map((l) => ({ id: l.id, primary: l.building, secondary: `${l.block ?? ""} · ${l.zone ?? ""}` }))}
             fields={[{ name: "building", placeholder: "Building" }, { name: "block", placeholder: "Block / wing" }, { name: "zone", placeholder: "Zone" }]}
             onAdd={async (v) => {
-              if (v.building.trim().length < 2) throw new Error("Enter a building name");
-              const { error } = await supabase.from("locations").insert({ building: v.building.trim(), block: v.block || null, zone: v.zone || null });
+              if ((v["building"] ?? "").trim().length < 2) throw new Error("Enter a building name");
+              const { error } = await supabase.from("locations").insert({ building: (v["building"] ?? "").trim(), block: (v["block"] ?? "") || null, zone: (v["zone"] ?? "") || null });
               if (error) throw error;
             }}
             onDelete={async (id) => { const { error } = await supabase.from("locations").delete().eq("id", id); if (error) throw error; }}

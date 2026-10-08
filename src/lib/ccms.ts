@@ -65,7 +65,7 @@ export const COMPLAINT_SELECT =
 
 export type ComplaintRow = Awaited<ReturnType<typeof fetchComplaints>>[number];
 
-export async function fetchComplaints(filter?: { reporter?: string; technician?: string }) {
+export async function fetchComplaints(filter?: { reporter?: string | undefined; technician?: string | undefined }) {
   let q = supabase.from("complaints").select(COMPLAINT_SELECT).order("created_at", { ascending: false });
   if (filter?.reporter) q = q.eq("reporter_id", filter.reporter);
   if (filter?.technician) q = q.eq("assigned_technician_id", filter.technician);
@@ -74,7 +74,7 @@ export async function fetchComplaints(filter?: { reporter?: string; technician?:
   return data;
 }
 
-export const complaintsQuery = (key: string, filter?: { reporter?: string; technician?: string }) =>
+export const complaintsQuery = (key: string, filter?: { reporter?: string | undefined; technician?: string | undefined }) =>
   queryOptions({ queryKey: ["complaints", key, filter], queryFn: () => fetchComplaints(filter) });
 
 export const unreadCountQuery = (uid?: string) =>

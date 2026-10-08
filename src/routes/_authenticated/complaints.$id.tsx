@@ -80,19 +80,19 @@ function Details() {
 
   async function move(to: Status) {
     setBusy(to);
-    const { error } = await supabase.rpc("update_complaint_status", { _complaint: id, _status: to, _note: note.trim() || undefined });
+    const { error } = await supabase.rpc("update_complaint_status", { _complaint: id, _status: to, ...(note.trim() ? { _note: note.trim() } : {}) });
     setBusy(null);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success(`Moved to ${STATUS_LABEL[to]}`);
     setNote("");
     qc.invalidateQueries();
   }
   async function comment() {
-    if (note.trim().length < 2) return toast.error("Write a note first");
+    if (note.trim().length < 2) { toast.error("Write a note first"); return; }
     setBusy("note");
     const { error } = await supabase.rpc("add_complaint_note", { _complaint: id, _note: note.trim() });
     setBusy(null);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     setNote("");
     qc.invalidateQueries({ queryKey: ["complaint", id] });
   }
