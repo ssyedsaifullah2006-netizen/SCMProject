@@ -32,11 +32,11 @@ export function AssignDialog({ complaintId, categoryId, current, label = "Assign
   const sorted = [...techs].sort((a, b) => Number(b.category_id === categoryId) - Number(a.category_id === categoryId) || Number(b.is_available) - Number(a.is_available));
 
   async function go() {
-    if (!tech) return toast.error("Pick a technician");
+    if (!tech) { toast.error("Pick a technician"); return; }
     setBusy(true);
-    const { error } = await supabase.rpc("assign_technician", { _complaint: complaintId, _technician: tech, _note: note.trim() || undefined });
+    const { error } = await supabase.rpc("assign_technician", { _complaint: complaintId, _technician: tech, ...(note.trim() ? { _note: note.trim() } : {}) });
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("Technician assigned");
     setOpen(false);
     qc.invalidateQueries();

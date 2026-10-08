@@ -42,8 +42,8 @@ function NewComplaint() {
 
   function pickFile(f?: File) {
     if (!f) return;
-    if (!f.type.startsWith("image/")) return toast.error("Please choose an image file");
-    if (f.size > 5 * 1024 * 1024) return toast.error("Image must be under 5 MB");
+    if (!f.type.startsWith("image/")) { toast.error("Please choose an image file"); return; }
+    if (f.size > 5 * 1024 * 1024) { toast.error("Image must be under 5 MB"); return; }
     setFile(f);
   }
 
