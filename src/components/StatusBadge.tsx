@@ -4,7 +4,7 @@ import { STATUS_LABEL, type Status, type Priority } from "@/lib/ccms";
 const statusCls: Record<Status, string> = {
   registered: "bg-st-registered/12 text-st-registered border-st-registered/30",
   assigned: "bg-st-assigned/12 text-st-assigned border-st-assigned/30",
-  in_progress: "bg-st-progress/15 text-accent-foreground border-st-progress/40",
+  in_progress: "bg-st-progress/15 text-st-progress border-st-progress/40",
   resolved: "bg-st-resolved/12 text-st-resolved border-st-resolved/30",
   closed: "bg-st-closed/12 text-st-closed border-st-closed/30",
 };
@@ -47,7 +47,7 @@ export function StatusTrack({ status }: { status: Status }) {
       {steps.map((s, i) => (
         <li key={s} className="space-y-2">
           <div className={cn("h-1.5 rounded-full", i <= idx ? dotCls[status] : "bg-muted")} />
-          <p className={cn("text-[11px] font-medium", i <= idx ? "text-foreground" : "text-muted-foreground")}>
+          <p className={cn("break-words text-[11px] font-medium", i <= idx ? "text-foreground" : "text-muted-foreground")}>
             {STATUS_LABEL[s]}
           </p>
         </li>

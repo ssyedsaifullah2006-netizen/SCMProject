@@ -45,14 +45,14 @@ function Manager() {
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-44 bg-card"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Filter by status" className="w-44 bg-card"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {STATUSES.map((s) => <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={cat} onValueChange={setCat}>
-              <SelectTrigger className="w-44 bg-card"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Filter by category" className="w-44 bg-card"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All categories</SelectItem>
                 {lk?.categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -70,7 +70,7 @@ function Manager() {
             }
           />
         </div>
-        <aside className="h-fit rounded-lg border bg-card p-5">
+        <aside className="h-fit border-t pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Technician load</h2>
           {load.length === 0 && <p className="text-sm text-muted-foreground">No technicians yet.</p>}
           <ul className="space-y-3">

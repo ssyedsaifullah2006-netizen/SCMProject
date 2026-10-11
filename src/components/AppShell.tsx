@@ -3,20 +3,21 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import {
-  Bell, ClipboardList, LayoutDashboard, LogOut, Menu, PlusCircle, Shield, Wrench, Building2, X,
+  Bell, ClipboardList, LayoutDashboard, LogOut, Menu, Shield, Wrench, Building2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery, unreadCountQuery, ROLE_LABEL, type AppRole } from "@/lib/ccms";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavItem = { to: string; label: string; icon: typeof Bell; roles?: AppRole[] };
 const NAV: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/complaints/new", label: "Register Complaint", icon: PlusCircle, roles: ["student", "faculty", "estate_manager", "admin"] },
   { to: "/complaints", label: "My Complaints", icon: ClipboardList, roles: ["student", "faculty", "estate_manager", "admin"] },
   { to: "/technician", label: "My Jobs", icon: Wrench, roles: ["technician"] },
-  { to: "/manager", label: "Estate Desk", icon: Building2, roles: ["estate_manager", "admin"] },
-  { to: "/admin", label: "Admin Panel", icon: Shield, roles: ["admin"] },
+  { to: "/manager", label: "All Complaints", icon: Building2, roles: ["estate_manager", "admin"] },
+  { to: "/admin", label: "Administration", icon: Shield, roles: ["admin"] },
   { to: "/notifications", label: "Notifications", icon: Bell },
 ];
 
@@ -37,7 +38,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const nav = (
-    <nav className="flex flex-1 flex-col gap-1">
+    <nav aria-label="Main navigation" className="flex flex-1 flex-col gap-1">
       {items.map((n) => (
         <Link
           key={n.to}
@@ -62,7 +63,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const brand = (
     <Link to="/dashboard" className="flex items-center gap-2.5 px-2">
       <span className="grid size-9 place-items-center rounded-md bg-sidebar-primary font-display text-sm font-extrabold text-sidebar-primary-foreground">
-        CC
+        <Building2 className="size-5" />
       </span>
       <span className="leading-tight">
         <span className="block font-display text-base font-bold text-sidebar-accent-foreground">CCMS</span>
@@ -75,45 +76,39 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="border-t border-sidebar-border pt-4">
       <p className="truncate px-2 text-sm font-medium text-sidebar-accent-foreground">{me.profile?.full_name}</p>
       <p className="px-2 text-xs text-sidebar-primary">{ROLE_LABEL[me.role]}</p>
-      <button
+      <Button variant="ghost"
         onClick={signOut}
-        className="mt-3 flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        className="mt-3 w-full justify-start px-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
         <LogOut className="size-4" /> Sign out
-      </button>
+      </Button>
     </div>
   );
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr]">
-      <aside className="sticky top-0 hidden h-screen flex-col gap-8 bg-sidebar p-4 lg:flex">
+      <aside className="sticky top-0 hidden h-screen flex-col gap-8 border-r border-sidebar-border bg-sidebar p-4 lg:flex">
         {brand}
         {nav}
         {footer}
       </aside>
 
-      <header className="sticky top-0 z-30 flex items-center justify-between bg-sidebar px-4 py-3 lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-sidebar px-4 py-3 lg:hidden">
         {brand}
         <div className="flex items-center gap-2">
-          <Link to="/notifications" className="relative p-2 text-sidebar-foreground">
+          <Link to="/notifications" aria-label="Notifications" className="relative p-2 text-sidebar-foreground">
             <Bell className="size-5" />
             {unread > 0 && <span className="absolute right-1 top-1 size-2 rounded-full bg-sidebar-primary" />}
           </Link>
-          <button onClick={() => setOpen(true)} className="p-2 text-sidebar-foreground" aria-label="Open menu">
-            <Menu className="size-5" />
-          </button>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open menu"><Menu className="size-5" /></Button></SheetTrigger>
+            <SheetContent side="left" aria-describedby={undefined} className="flex w-72 flex-col gap-6 bg-sidebar p-4">
+              <SheetTitle className="sr-only">Navigation</SheetTitle>
+              {brand}{nav}{footer}
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
-      <div className={cn("fixed inset-0 z-40 flex-col gap-6 bg-sidebar p-4 lg:hidden", open ? "flex" : "hidden")}>
-        <div className="flex items-center justify-between">
-          {brand}
-          <button onClick={() => setOpen(false)} className="p-2 text-sidebar-foreground" aria-label="Close menu">
-            <X className="size-5" />
-          </button>
-        </div>
-        {nav}
-        {footer}
-      </div>
 
       <main className="min-w-0 px-4 py-6 sm:px-8 lg:py-10">{children}</main>
     </div>
@@ -124,8 +119,7 @@ export function PageHeader({ eyebrow, title, children }: { eyebrow?: string; tit
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div>
-        {eyebrow && <p className="mb-1 font-mono text-xs uppercase tracking-widest text-primary">{eyebrow}</p>}
-        <h1 className="text-3xl font-bold sm:text-4xl">{title}</h1>
+        <h1 className="text-2xl font-semibold sm:text-3xl">{title}</h1>
       </div>
       {children}
     </div>
@@ -146,15 +140,12 @@ export function StatCard({ label, value, hint, tone = "default" }: { label: stri
   return (
     <div
       className={cn(
-        "rounded-lg border p-5",
-        tone === "default" && "bg-card",
-        tone === "accent" && "border-accent bg-accent text-accent-foreground",
-        tone === "ink" && "border-ink bg-ink text-ink-foreground",
+        "rounded-lg border bg-card p-5",
       )}
     >
-      <p className={cn("text-xs font-medium uppercase tracking-wider", tone === "default" ? "text-muted-foreground" : "opacity-80")}>{label}</p>
-      <p className="mt-2 font-display text-4xl font-bold">{value}</p>
-      {hint && <p className={cn("mt-1 text-xs", tone === "default" ? "text-muted-foreground" : "opacity-75")}>{hint}</p>}
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-2 font-display text-3xl font-semibold">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
