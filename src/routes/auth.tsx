@@ -100,8 +100,8 @@ function AuthPage() {
             </TabsList>
             <TabsContent value="login">
               <form onSubmit={onLogin} className="space-y-5" noValidate>
-                <div className="space-y-1.5"><Label htmlFor="l-email">Email</Label><Input id="l-email" name="email" type="email" autoComplete="email" required aria-invalid={!!errors.email} />{err("email")}</div>
-                <div className="space-y-1.5"><Label htmlFor="l-pw">Password</Label><Input id="l-pw" name="password" type="password" autoComplete="current-password" required aria-invalid={!!errors.password} />{err("password")}</div>
+                <div className="space-y-1.5"><Label htmlFor="l-email">Email</Label><Input id="l-email" name="email" type="email" autoComplete="email" required aria-invalid={!!errors["email"]} />{err("email")}</div>
+                <div className="space-y-1.5"><Label htmlFor="l-pw">Password</Label><Input id="l-pw" name="password" type="password" autoComplete="current-password" required aria-invalid={!!errors["password"]} />{err("password")}</div>
                 <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Sign in</Button>
               </form>
             </TabsContent>

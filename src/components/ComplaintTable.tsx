@@ -18,11 +18,11 @@ export function ComplaintList({ rows, empty, action }: { rows: ComplaintRow[]; e
                 <PriorityTag priority={c.priority} />
                 <span className="text-xs text-muted-foreground">· {c.category?.name}</span>
               </div>
-              <p className="mt-1 truncate font-medium">{c.title}</p>
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              <p className="mt-1 break-words font-medium">{c.title}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {locationLabel(c.location)}
                 {c.room ? ` · ${c.room}` : ""} · {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
-                {c.technician?.full_name ? ` · 🔧 ${c.technician.full_name}` : ""}
+                {c.technician?.full_name ? ` · ${c.technician.full_name}` : ""}
               </p>
             </Link>
             <div className="flex items-center gap-3">

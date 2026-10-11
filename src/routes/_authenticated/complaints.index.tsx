@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/complaints/")({
 
 function MyComplaints() {
   const { data: me } = useQuery(meQuery);
-  const { data: rows = [], isLoading } = useQuery({ ...complaintsQuery("mine", { reporter: me?.id }), enabled: !!me });
+  const { data: rows = [], isLoading, error, refetch } = useQuery({ ...complaintsQuery("mine", { reporter: me?.id }), enabled: !!me });
   const [tab, setTab] = useState<Status | "all">("all");
   const [q, setQ] = useState("");
 
@@ -32,21 +32,22 @@ function MyComplaints() {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-wrap gap-1">
           {(["all", ...STATUSES] as const).map((s) => (
-            <button
+            <Button variant="ghost" size="sm"
               key={s}
               onClick={() => setTab(s)}
+              aria-pressed={tab === s}
               className={cn("rounded-full border px-3 py-1 text-xs font-medium", tab === s ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-muted")}
             >
               {s === "all" ? "All" : STATUS_LABEL[s]} ({s === "all" ? rows.length : rows.filter((r) => r.status === s).length})
-            </button>
+            </Button>
           ))}
         </div>
         <div className="relative sm:ml-auto sm:w-64">
           <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title or ticket" className="pl-8" />
+          <Input aria-label="Search complaints" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search complaints" className="pl-8" />
         </div>
       </div>
-      {isLoading ? <p className="text-muted-foreground">Loading…</p> : <ComplaintList rows={filtered} empty="No complaints match." />}
+      {error ? <div role="alert" className="space-y-3"><p>Unable to load complaints.</p><Button variant="outline" onClick={() => refetch()}>Try again</Button></div> : isLoading ? <p role="status" className="text-muted-foreground">Loading…</p> : <ComplaintList rows={filtered} empty="No complaints found." />}
     </div>
   );
 }

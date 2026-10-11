@@ -54,22 +54,21 @@ export function AssignDialog({ complaintId, categoryId, current, label = "Assign
         ) : (
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Technician</Label>
+              <Label htmlFor={`technician-${complaintId}`}>Technician</Label>
               <Select value={tech} onValueChange={setTech}>
-                <SelectTrigger><SelectValue placeholder="Choose technician" /></SelectTrigger>
+                <SelectTrigger id={`technician-${complaintId}`}><SelectValue placeholder="Choose technician" /></SelectTrigger>
                 <SelectContent>
                   {sorted.map((t) => (
                     <SelectItem key={t.user_id} value={t.user_id}>
-                      {t.profile?.full_name} · {t.category?.name ?? "General"} {t.category_id === categoryId ? "★" : ""} {t.is_available ? "" : "(busy)"}
+                      {t.profile?.full_name} · {t.category?.name ?? "General"} · {t.is_available ? "Available" : "Unavailable"}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">★ matches this complaint's category</p>
             </div>
             <div className="space-y-1.5">
-              <Label>Instructions (optional)</Label>
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={3} />
+              <Label htmlFor={`instructions-${complaintId}`}>Instructions (optional)</Label>
+              <Textarea id={`instructions-${complaintId}`} value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={3} />
             </div>
           </div>
         )}
