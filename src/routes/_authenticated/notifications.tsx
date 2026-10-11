@@ -7,6 +7,8 @@ import { meQuery } from "@/lib/ccms";
 import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { errMsg } from "@/lib/ccms";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({ meta: [{ title: "Notifications — CCMS" }, { name: "description", content: "Updates on your complaints and jobs." }] }),
@@ -28,15 +30,19 @@ function Notifications() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["notifications"] });
 
   async function markAll() {
-    await supabase.from("notifications").update({ is_read: true }).eq("is_read", false).eq("user_id", me!.id);
+    if (!me) return;
+    const { error } = await supabase.from("notifications").update({ is_read: true }).eq("is_read", false).eq("user_id", me.id);
+    if (error) { toast.error(errMsg(error)); return; }
     refresh();
   }
   async function markOne(id: string) {
-    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    const { error } = await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    if (error) { toast.error(errMsg(error)); return; }
     refresh();
   }
   async function remove(id: string) {
-    await supabase.from("notifications").delete().eq("id", id);
+    const { error } = await supabase.from("notifications").delete().eq("id", id);
+    if (error) { toast.error(errMsg(error)); return; }
     refresh();
   }
 
@@ -52,8 +58,8 @@ function Notifications() {
       ) : (
         <ul className="divide-y overflow-hidden rounded-lg border bg-card">
           {items.map((n) => (
-            <li key={n.id} className={cn("flex gap-3 p-4", !n.is_read && "bg-accent/15")}>
-              <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", n.is_read ? "bg-transparent" : "bg-accent")} />
+            <li key={n.id} className={cn("flex gap-3 p-4", !n.is_read && "bg-accent/40")}>
+              <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", n.is_read ? "bg-transparent" : "bg-primary")} />
               <div className="min-w-0 flex-1">
                 {n.complaint_id ? (
                   <Link to="/complaints/$id" params={{ id: n.complaint_id }} onClick={() => markOne(n.id)} className="font-medium hover:underline">{n.title}</Link>
@@ -62,8 +68,8 @@ function Notifications() {
                 <p className="mt-1 text-xs text-muted-foreground">{formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}</p>
               </div>
               <div className="flex items-start gap-1">
-                {!n.is_read && <Button size="sm" variant="ghost" onClick={() => markOne(n.id)}>Mark read</Button>}
-                <Button size="icon" variant="ghost" onClick={() => remove(n.id)} aria-label="Delete"><Trash2 className="size-4" /></Button>
+                {!n.is_read && <Button size="icon" variant="ghost" title="Mark as read" aria-label="Mark as read" onClick={() => markOne(n.id)}><CheckCheck /></Button>}
+                <Button size="icon" variant="ghost" title="Delete notification" onClick={() => remove(n.id)} aria-label="Delete notification"><Trash2 className="size-4" /></Button>
               </div>
             </li>
           ))}

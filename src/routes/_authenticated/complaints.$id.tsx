@@ -60,7 +60,8 @@ function Details() {
     queryKey: ["photo", c?.photo_url],
     enabled: !!c?.photo_url,
     queryFn: async () => {
-      const { data } = await supabase.storage.from("complaint-photos").createSignedUrl(c!.photo_url!, 3600);
+      if (!c?.photo_url) return null;
+      const { data } = await supabase.storage.from("complaint-photos").createSignedUrl(c.photo_url, 3600);
       return data?.signedUrl ?? null;
     },
   });
@@ -108,22 +109,22 @@ function Details() {
             <span className="font-mono text-sm text-primary">{c.ticket_no}</span>
             <PriorityTag priority={c.priority} />
           </div>
-          <h1 className="mt-1 text-3xl font-bold">{c.title}</h1>
+          <h1 className="mt-1 break-words text-2xl font-semibold">{c.title}</h1>
         </div>
         <StatusBadge status={c.status} />
       </div>
 
-      <div className="mb-6 rounded-lg border bg-card p-5"><StatusTrack status={c.status} /></div>
+      <div className="mb-6 border-b pb-6"><StatusTrack status={c.status} /></div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         <div className="space-y-6">
-          <section className="rounded-lg border bg-card p-5">
+          <section className="border-b pb-6">
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Description</h2>
             <p className="whitespace-pre-wrap">{c.description}</p>
             {photo && <a href={photo} target="_blank" rel="noreferrer"><img src={photo} alt="Complaint" className="mt-4 max-h-80 rounded-md border object-cover" /></a>}
           </section>
 
-          <section className="rounded-lg border bg-card p-5">
+          <section>
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Timeline</h2>
             <ol className="relative space-y-5 border-l pl-5">
               {updates.map((u) => (
@@ -140,14 +141,14 @@ function Details() {
             </ol>
             {c.status !== "closed" && (
               <div className="mt-6 space-y-3 border-t pt-5">
-                <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note (also attached to a status change)" maxLength={1000} rows={3} />
+                <Textarea aria-label="Complaint note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note" maxLength={1000} rows={3} />
                 <div className="flex flex-wrap gap-2">
                   {actions.map((a) => (
                     <Button key={a.to + a.label} variant={a.variant ?? "default"} onClick={() => move(a.to)} disabled={!!busy}>
                       {busy === a.to && <Loader2 className="animate-spin" />}{a.label}
                     </Button>
                   ))}
-                  <Button variant="ghost" onClick={comment} disabled={!!busy}>{busy === "note" && <Loader2 className="animate-spin" />}Add note</Button>
+                  <Button variant="ghost" onClick={comment} disabled={!!busy || note.trim().length < 2}>{busy === "note" && <Loader2 className="animate-spin" />}Add note</Button>
                 </div>
               </div>
             )}
@@ -155,7 +156,7 @@ function Details() {
         </div>
 
         <aside className="space-y-4">
-          <div className="space-y-3 rounded-lg border bg-card p-5 text-sm">
+          <div className="space-y-4 border-t pt-5 text-sm lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
             <Info k="Category" v={c.category?.name} />
             <Info k="Location" v={locationLabel(c.location)} />
             {c.room && <Info k="Room / spot" v={c.room} />}

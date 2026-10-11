@@ -16,3 +16,5 @@
 - Roles live in `user_roles`; signup can only self-assign student/faculty, the first user becomes admin, other roles are granted by admins — prevents privilege escalation.
 - Complaint photos are stored in a private bucket under `<user_id>/...` and shown via signed URLs — workspace blocks public buckets.
 - Signed-in pages live under `src/routes/_authenticated/` and share `AppShell` — single gate and navigation.
+- The root entry sends users to the existing auth page, which forwards active sessions to the dashboard — avoids a redundant marketing step.
+- Content routes use `pageHead` for page-specific metadata — keeps social and search tags consistent.

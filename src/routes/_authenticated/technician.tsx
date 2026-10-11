@@ -20,14 +20,20 @@ function TechDash() {
   const { data: tech } = useQuery({
     queryKey: ["tech-self", me?.id],
     enabled: me?.role === "technician",
-    queryFn: async () => (await supabase.from("technicians").select("*, category:categories(name)").eq("user_id", me!.id).maybeSingle()).data,
+    queryFn: async () => {
+      if (!me) return null;
+      const { data, error } = await supabase.from("technicians").select("*, category:categories(name)").eq("user_id", me.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
   });
 
   if (!me) return null;
   if (me.role !== "technician") return <NoAccess />;
 
   async function toggle(v: boolean) {
-    const { error } = await supabase.from("technicians").update({ is_available: v }).eq("user_id", me!.id);
+    if (!me) return;
+    const { error } = await supabase.from("technicians").update({ is_available: v }).eq("user_id", me.id);
     if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["tech-self"] });
   }
@@ -56,7 +62,7 @@ function TechDash() {
       <h2 className="mb-3 text-xl font-bold">Active jobs</h2>
       <ComplaintList
         rows={active}
-        empty="No active jobs. Enjoy the break ☕"
+        empty="No active jobs."
         action={(c) =>
           c.status === "assigned" ? (
             <Button size="sm" onClick={() => move(c.id, "in_progress")}>Start</Button>
