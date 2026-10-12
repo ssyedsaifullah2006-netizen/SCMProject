@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
@@ -11,7 +12,7 @@ import { toast } from "sonner";
 import { errMsg } from "@/lib/ccms";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "Notifications — CCMS" }, { name: "description", content: "Updates on your complaints and jobs." }] }),
+  head: () => pageHead("Notifications — CCMS", "Updates on your complaints and jobs."),
   component: Notifications,
 });
 

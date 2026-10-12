@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -15,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export const Route = createFileRoute("/_authenticated/complaints/new")({
-  head: () => ({ meta: [{ title: "Register Complaint — CCMS" }, { name: "description", content: "Report a new campus maintenance issue." }] }),
+  head: () => pageHead("Register Complaint — CCMS", "Report a new campus maintenance issue."),
   component: NewComplaint,
 });
 
