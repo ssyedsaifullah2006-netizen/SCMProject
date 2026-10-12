@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { AssignDialog, techniciansQuery } from "@/components/AssignDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/manager")({
-  head: () => ({ meta: [{ title: "Estate Manager Dashboard — CCMS" }, { name: "description", content: "Triage, assign and monitor all campus complaints." }] }),
+  head: () => pageHead("Estate Manager Dashboard — CCMS", "Triage, assign and monitor all campus complaints."),
   component: Manager,
 });
 

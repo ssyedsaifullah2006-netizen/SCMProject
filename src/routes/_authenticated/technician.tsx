@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/_authenticated/technician")({
-  head: () => ({ meta: [{ title: "Technician Dashboard — CCMS" }, { name: "description", content: "Your assigned maintenance jobs." }] }),
+  head: () => pageHead("Technician Dashboard — CCMS", "Your assigned maintenance jobs."),
   component: TechDash,
 });
 

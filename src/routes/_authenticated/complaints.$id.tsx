@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/complaints/$id")({
-  head: () => ({ meta: [{ title: "Complaint Details — CCMS" }, { name: "description", content: "Status, history and actions for a complaint." }] }),
+  head: () => pageHead("Complaint Details — CCMS", "Status, history and actions for a complaint."),
   component: Details,
 });
 

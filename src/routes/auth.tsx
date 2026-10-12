@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/page-head";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -11,14 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [
-      { title: "Sign in — CCMS" },
-      { name: "description", content: "Sign in or create your CCMS account to report and track campus maintenance." },
-      { property: "og:title", content: "Sign in — CCMS" },
-      { property: "og:description", content: "Access the Campus Complaint & Maintenance System." },
-    ],
-  }),
+  head: () => pageHead("Sign in — CCMS", "Sign in or create your CCMS account to report and track campus maintenance."),
   component: AuthPage,
 });
 
