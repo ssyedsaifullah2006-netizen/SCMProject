@@ -5,11 +5,11 @@ import { useState } from "react";
 import { meQuery, complaintsQuery, lookupsQuery, isStaff, STATUSES, STATUS_LABEL } from "@/lib/ccms";
 import { PageHeader, StatCard, NoAccess } from "@/components/AppShell";
 import { ComplaintList } from "@/components/ComplaintTable";
-import { AssignDialog, techniciansQuery } from "@/components/AssignDialog";
+import { techniciansQuery } from "@/lib/technicians";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/manager")({
-  head: () => pageHead("Estate Manager Dashboard — CCMS", "Triage, assign and monitor all campus complaints."),
+  head: () => pageHead("Estate Manager Dashboard — CCMS", "Monitor campus complaints, automatic assignments and technician workload."),
   component: Manager,
 });
 
@@ -36,7 +36,7 @@ function Manager() {
     <div className="mx-auto max-w-6xl">
       <PageHeader eyebrow="Estate desk" title="All complaints" />
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard tone="accent" label="Awaiting assignment" value={unassigned.length} />
+        <StatCard tone="accent" label="Queued for technician" value={unassigned.length} />
         <StatCard tone="ink" label="In progress" value={rows.filter((r) => r.status === "in_progress").length} />
         <StatCard label="Past target time" value={overdue.length} hint="Open beyond category SLA" />
         <StatCard label="Awaiting closure" value={rows.filter((r) => r.status === "resolved").length} />
@@ -64,11 +64,6 @@ function Manager() {
           <ComplaintList
             rows={filtered}
             empty="No complaints match these filters."
-            action={(c) =>
-              c.status === "registered" || c.status === "assigned" ? (
-                <AssignDialog complaintId={c.id} categoryId={c.category_id} current={c.assigned_technician_id} label={c.assigned_technician_id ? "Reassign" : "Assign"} />
-              ) : null
-            }
           />
         </div>
         <aside className="h-fit border-t pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
@@ -79,7 +74,7 @@ function Manager() {
               <li key={t.id} className="flex items-center justify-between gap-2 text-sm">
                 <div className="min-w-0">
                   <p className="truncate font-medium">{t.profile?.full_name}</p>
-                  <p className="text-xs text-muted-foreground">{t.category?.name ?? "General"} · {t.is_available ? "Available" : "Busy"}</p>
+                  <p className="text-xs text-muted-foreground">{t.category?.name ?? "Trade not set"} · {t.is_available ? "Available" : "Unavailable"}</p>
                 </div>
                 <span className="font-display text-xl font-bold">{t.active}</span>
               </li>
