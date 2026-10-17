@@ -10,7 +10,6 @@ import { meQuery, unreadCountQuery, ROLE_LABEL, type AppRole } from "@/lib/ccms"
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-
 type NavItem = { to: string; label: string; icon: typeof Bell; roles?: AppRole[] };
 const NAV: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -20,7 +19,6 @@ const NAV: NavItem[] = [
   { to: "/admin", label: "Administration", icon: Shield, roles: ["admin"] },
   { to: "/notifications", label: "Notifications", icon: Bell },
 ];
-
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: me } = useQuery(meQuery);
   const { data: unread = 0 } = useQuery(unreadCountQuery(me?.id));
@@ -36,7 +34,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
-
   const nav = (
     <nav aria-label="Main navigation" className="flex flex-1 flex-col gap-1">
       {items.map((n) => (
@@ -59,7 +56,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       ))}
     </nav>
   );
-
   const brand = (
     <Link to="/dashboard" className="flex items-center gap-2.5 px-2">
       <span className="grid size-9 place-items-center rounded-md bg-sidebar-primary font-display text-sm font-extrabold text-sidebar-primary-foreground">
@@ -71,7 +67,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </span>
     </Link>
   );
-
   const footer = me && (
     <div className="border-t border-sidebar-border pt-4">
       <p className="truncate px-2 text-sm font-medium text-sidebar-accent-foreground">{me.profile?.full_name}</p>
@@ -84,7 +79,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </Button>
     </div>
   );
-
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr]">
       <aside className="sticky top-0 hidden h-screen flex-col gap-8 border-r border-sidebar-border bg-sidebar p-4 lg:flex">
@@ -114,7 +108,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
 export function PageHeader({ eyebrow, title, children }: { eyebrow?: string; title: string; children?: ReactNode }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -135,7 +128,6 @@ export function NoAccess() {
     </div>
   );
 }
-
 export function StatCard({ label, value, hint, tone = "default" }: { label: string; value: number | string; hint?: string; tone?: "default" | "accent" | "ink" }) {
   return (
     <div
