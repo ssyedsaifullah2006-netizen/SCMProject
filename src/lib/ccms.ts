@@ -75,7 +75,7 @@ export async function fetchComplaints(filter?: { reporter?: string | undefined; 
 }
 
 export const complaintsQuery = (key: string, filter?: { reporter?: string | undefined; technician?: string | undefined }) =>
-  queryOptions({ queryKey: ["complaints", key, filter], queryFn: () => fetchComplaints(filter), refetchInterval: 15000 });
+  queryOptions({ queryKey: ["complaints", key, filter], queryFn: () => fetchComplaints(filter) });
 
 export const unreadCountQuery = (uid?: string) =>
   queryOptions({

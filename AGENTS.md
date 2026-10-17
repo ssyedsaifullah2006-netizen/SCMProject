@@ -11,9 +11,7 @@
 
 # AGENTS.md
 
-- Data access uses the browser backend client with row-level security; status and role changes use security-definer database functions — keeps transition and role rules enforced server-side in one place.
-- Automatic assignments run in database triggers through a transaction-serialized dispatcher on complaint creation and technician availability/trade changes; its entry point is not executable by ordinary clients — keeps dispatch atomic, workload-balanced and auditable without relying on an open browser.
-- Technician queries live in `src/lib/technicians.ts`; complaint views poll for assignment updates — keeps shared data independent of removed manual-assignment UI.
+- Data access uses the browser backend client with row-level security; every status change and technician assignment goes through security-definer database functions (`update_complaint_status`, `assign_technician`, `set_user_role`) — keeps transition and role rules enforced server-side in one place.
 - Notifications and complaint history rows are written only by database triggers/functions, never by the client — keeps the audit trail trustworthy.
 - Roles live in `user_roles`; signup can only self-assign student/faculty, the first user becomes admin, other roles are granted by admins — prevents privilege escalation.
 - Complaint photos are stored in a private bucket under `<user_id>/...` and shown via signed URLs — workspace blocks public buckets.

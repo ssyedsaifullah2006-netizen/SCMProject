@@ -7,7 +7,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery, lookupsQuery, ROLE_LABEL, errMsg, type AppRole } from "@/lib/ccms";
 import { PageHeader, NoAccess, StatCard } from "@/components/AppShell";
-import { techniciansQuery } from "@/lib/technicians";
+import { techniciansQuery } from "@/components/AssignDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -92,7 +92,7 @@ function Admin() {
                       <td className="p-3">
                         {u.role === "technician" ? (
                           <Select value={t?.category_id ?? ""} onValueChange={(v) => setTechCategory(u.id, v)}>
-                            <SelectTrigger aria-label={`Trade for ${u.full_name}`} className="w-40"><SelectValue placeholder="Select trade" /></SelectTrigger>
+                            <SelectTrigger aria-label={`Trade for ${u.full_name}`} className="w-40"><SelectValue placeholder="General" /></SelectTrigger>
                             <SelectContent>{lk?.categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                           </Select>
                         ) : <span className="text-muted-foreground">—</span>}
