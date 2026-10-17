@@ -8,9 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
-
 # AGENTS.md
-
 - Data access uses the browser backend client with row-level security; every status change and technician assignment goes through security-definer database functions (`update_complaint_status`, `assign_technician`, `set_user_role`) — keeps transition and role rules enforced server-side in one place.
 - Notifications and complaint history rows are written only by database triggers/functions, never by the client — keeps the audit trail trustworthy.
 - Roles live in `user_roles`; signup can only self-assign student/faculty, the first user becomes admin, other roles are granted by admins — prevents privilege escalation.
