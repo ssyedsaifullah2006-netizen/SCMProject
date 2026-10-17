@@ -8,7 +8,6 @@ import { ArrowLeft, Loader2, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { COMPLAINT_SELECT, meQuery, isStaff, errMsg, locationLabel, STATUS_LABEL, type Status, type AppRole } from "@/lib/ccms";
 import { StatusBadge, StatusTrack, PriorityTag } from "@/components/StatusBadge";
-import { AssignDialog } from "@/components/AssignDialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -39,6 +38,7 @@ function Details() {
 
   const { data: c, isLoading } = useQuery({
     queryKey: ["complaint", id],
+    refetchInterval: 15000,
     queryFn: async () => {
       const { data, error } = await supabase.from("complaints").select(COMPLAINT_SELECT).eq("id", id).maybeSingle();
       if (error) throw error;
@@ -47,6 +47,7 @@ function Details() {
   });
   const { data: updates = [] } = useQuery({
     queryKey: ["complaint", id, "updates"],
+    refetchInterval: 15000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("complaint_updates")
@@ -164,12 +165,9 @@ function Details() {
             <Info k="Reported by" v={`${c.reporter?.full_name ?? "—"}${c.reporter?.department ? ` (${c.reporter.department})` : ""}`} />
             <Info k="Filed" v={format(new Date(c.created_at), "d MMM yyyy, HH:mm")} />
             <Info k="Target" v={`${c.category?.sla_hours ?? "—"}h response`} />
-            <Info k="Technician" v={c.technician?.full_name ?? "Not assigned"} />
+            <Info k="Technician" v={c.technician?.full_name ?? (c.status === "registered" ? "Queued — awaiting available category specialist" : "Not assigned")} />
             {c.resolved_at && <Info k="Resolved" v={format(new Date(c.resolved_at), "d MMM yyyy, HH:mm")} />}
           </div>
-          {isStaff(me.role) && c.status !== "resolved" && c.status !== "closed" && (
-            <AssignDialog complaintId={c.id} categoryId={c.category_id} current={c.assigned_technician_id} label={c.assigned_technician_id ? "Reassign technician" : "Assign technician"} />
-          )}
         </aside>
       </div>
     </div>

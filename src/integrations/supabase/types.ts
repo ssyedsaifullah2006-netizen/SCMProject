@@ -384,6 +384,7 @@ export type Database = {
         Args: { _complaint: string; _note?: string; _technician: string }
         Returns: undefined
       }
+      dispatch_queued_complaints: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
